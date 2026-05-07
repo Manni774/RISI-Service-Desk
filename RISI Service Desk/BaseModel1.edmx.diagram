@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="c17af88877d5481791593e8fa2f31255" Name="Diagram1">
+        <EntityTypeShape EntityType="RISI_ServiceDeskModel.Client" Width="1.5" PointX="0.75" PointY="1.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RISI_ServiceDeskModel.Employee" Width="1.5" PointX="0.75" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RISI_ServiceDeskModel.Request" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="RISI_ServiceDeskModel.Service" Width="1.5" PointX="0.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RISI_ServiceDeskModel.sysdiagram" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="RISI_ServiceDeskModel.FK__Requests__Client__3F466844" ManuallyRouted="false" />
+        <AssociationConnector Association="RISI_ServiceDeskModel.FK__Requests__Employ__412EB0B6" ManuallyRouted="false" />
+        <AssociationConnector Association="RISI_ServiceDeskModel.FK__Requests__Servic__403A8C7D" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

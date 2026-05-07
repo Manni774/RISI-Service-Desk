@@ -1,0 +1,36 @@
+﻿<Window x:Class="RISI_Service_Desk.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RISI_Service_Desk"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Frame NavigationUIVisibility="Hidden" ContentRendered="MainFrame_ContentRendered" Grid.Row="1" Name ="MainFrame"/>
+        <Button Content="Обратно" Name="btnBack" Width="110" Height="40" Click="btnBack_Click" Margin="10,15,640,54"/>
+        
+        <!-- Панель навигации по таблицам -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" 
+                    Margin="10" HorizontalAlignment="Center">
+            <Button Content="Клиенты" Click="BtnClients_Click" Width="100"/>
+            <Button Content="Услуги" Click="BtnServices_Click" Width="100"/>
+            <Button Content="Сотрудники" Click="BtnEmployees_Click" Width="100"/>
+            <Button Content="Заявки" Click="BtnRequests_Click" Width="100"/>
+        </StackPanel>
+
+        <!-- Нижняя панель с кнопками действий и статусом -->
+        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="10">
+            <WrapPanel HorizontalAlignment="Center" Margin="0,5">
+                <Button Content="Добавить" Click="BtnAdd_Click" Width="100"/>
+                <Button Content="Редактировать" Click="BtnEdit_Click" Width="100"/>
+                <Button Content="Удалить" Click="BtnDelete_Click" Width="100"/>
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</Window>
