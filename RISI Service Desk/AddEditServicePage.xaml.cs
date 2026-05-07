@@ -1,43 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для AddEditServicePage.xaml
-    /// </summary>
     public partial class AddEditServicePage : Page
     {
-        private Service _currentServices = new Service();
+        private Service _currentService;
         private bool _isEditMode;
 
-        public AddEditServicePage(Service selectedServices)
+        public AddEditServicePage(Service selectedService)
         {
             InitializeComponent();
-            if (selectedServices != null)
-                _currentServices = selectedServices;
-            DataContext = _currentServices;
+
+            _isEditMode = (selectedService != null);
+            _currentService = selectedService ?? new Service();
             CmbNameServise.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
-            if (!_isEditMode) Title = "Добавление услуги";
-            else Title = "Редактирование услуги";
+            DataContext = _currentService;
+
+            if (_isEditMode)
+            {
+                // Заполняем поля для редактирования (привязка уже есть, но можно задать явно)
+                txtDescription.Text = _currentService.Description;
+                txtBasePrice.Text = _currentService.BasePrice?.ToString("F2");
+            }
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-
             // Валидация
             if (string.IsNullOrWhiteSpace(CmbNameServise.Text))
             {
@@ -46,35 +40,39 @@ namespace RISI_Service_Desk
                 return;
             }
 
-            decimal price = 0;
-            if (!string.IsNullOrWhiteSpace(txtBasePrice.Text) && !decimal.TryParse(txtBasePrice.Text, out price))
+            decimal? price = null;
+            if (!string.IsNullOrWhiteSpace(txtBasePrice.Text))
             {
-                MessageBox.Show("Цена должна быть числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                txtBasePrice.Focus();
-                return;
+                string priceText = txtBasePrice.Text.Trim().Replace(',', '.');
+                if (!decimal.TryParse(priceText, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal parsedPrice))
+                {
+                    MessageBox.Show("Цена должна быть числом (можно использовать точку или запятую).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    txtBasePrice.Focus();
+                    return;
+                }
+                price = parsedPrice;
             }
 
-            _currentServices.ServiceName = CmbNameServise.Text.Trim();
-            _currentServices.Description = txtDescription.Text;
-            _currentServices.BasePrice = price;
+            _currentService.Description = txtDescription.Text;
+            _currentService.BasePrice = price;
 
-            using (var context = new RISI_ServiceDeskEntities1()) 
+            using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Services.Add(_currentServices);
+                        context.Services.Add(_currentService);
                     else
                     {
-                        context.Services.Attach(_currentServices);
-                        context.Entry(_currentServices).State = EntityState.Modified;
+                        context.Services.Attach(_currentService);
+                        context.Entry(_currentService).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     // Возврат на предыдущую страницу
-                    if (Manager.MainFrame.CanGoBack)
-                        Manager.MainFrame.GoBack();
+                    if (NavigationService != null && NavigationService.CanGoBack)
+                        NavigationService.GoBack();
                 }
                 catch (Exception ex)
                 {
@@ -86,8 +84,8 @@ namespace RISI_Service_Desk
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Manager.MainFrame.CanGoBack)
-                Manager.MainFrame.GoBack();
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
     }
 }

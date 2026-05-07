@@ -1,90 +1,79 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Entity;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для AddEditEmployeesPage.xaml
-    /// </summary>
     public partial class AddEditEmployeesPage : Page
     {
-        private Employee _currentEmployees = new Employee();
+        private Employee _currentEmployee;
         private bool _isEditMode;
 
-        public AddEditEmployeesPage(Employee selectedEmployees)
+        public AddEditEmployeesPage(Employee selectedEmployee)
         {
             InitializeComponent();
-            if (selectedEmployees != null)
-                _currentEmployees = selectedEmployees;
-            DataContext = _currentEmployees;
-            if (!_isEditMode) Title = "Добавление услуги";
-            else Title = "Редактирование услуги";
+
+            _isEditMode = (selectedEmployee != null);
+            _currentEmployee = selectedEmployee ?? new Employee();
+
+            DataContext = _currentEmployee;
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-
             // Валидация
             if (string.IsNullOrWhiteSpace(txtFullName.Text))
             {
-                MessageBox.Show("Введите наименование компании клиента.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Введите ФИО сотрудника.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtFullName.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtPosition.Text))
             {
-                MessageBox.Show("Введите контактное лицо.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Введите должность.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtPosition.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtPhone.Text))
             {
                 MessageBox.Show("Введите номер телефона.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtPhone.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtEmail.Text))
             {
                 MessageBox.Show("Введите эл. почту.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtEmail.Focus();
                 return;
             }
 
-            _currentEmployees.FullName = txtFullName.Text.Trim();
-            _currentEmployees.Position = txtPosition.Text;
-            _currentEmployees.Phone = txtPhone.Text;
-            _currentEmployees.Email = txtEmail.Text;
+            _currentEmployee.FullName = txtFullName.Text.Trim();
+            _currentEmployee.Position = txtPosition.Text.Trim();
+            _currentEmployee.Phone = txtPhone.Text.Trim();
+            _currentEmployee.Email = txtEmail.Text.Trim();
 
             using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Employees.Add(_currentEmployees);
+                        context.Employees.Add(_currentEmployee);
                     else
                     {
-                        context.Employees.Attach(_currentEmployees);
-                        context.Entry(_currentEmployees).State = EntityState.Modified;
+                        context.Employees.Attach(_currentEmployee);
+                        context.Entry(_currentEmployee).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     // Возврат на предыдущую страницу
-                    if (Manager.MainFrame.CanGoBack)
-                        Manager.MainFrame.GoBack();
+                    if (NavigationService != null && NavigationService.CanGoBack)
+                        NavigationService.GoBack();
                 }
                 catch (Exception ex)
                 {
@@ -96,8 +85,8 @@ namespace RISI_Service_Desk
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Manager.MainFrame.CanGoBack)
-                Manager.MainFrame.GoBack();
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
     }
 }

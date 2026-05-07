@@ -1,81 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для ClientsPage.xaml
-    /// </summary>
     public partial class ClientsPage : Page
     {
         public ClientsPage()
         {
             InitializeComponent();
-            DGridRISIClients.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Clients.ToList();
+            LoadData();
         }
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        private void LoadData()
         {
-            Manager.MainFrame.Navigate(new AddEditClientsPage((sender as Button).DataContext as Client));
-        }
-
-        private void BtnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            var clientRemove = DGridRISIClients.SelectedItems.Cast<Client>().ToList();
-
-            if (clientRemove.Any())
+            using (var context = new RISI_ServiceDeskEntities1())
             {
-                if (MessageBox.Show($"Вы точно хотите удалить следующие {clientRemove.Count()} элементов?", "Внимание",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        var context = RISI_ServiceDeskEntities1.GetContext();
-                        foreach (var item in clientRemove)
-                        {
-                            context.Clients.Remove(item);
-                        }
-                        context.SaveChanges();
-                        MessageBox.Show("Данные удалены.");
-                        DGridRISIClients.ItemsSource = new RISI_ServiceDeskEntities1().Clients.ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
+                var clients = context.Clients.ToList();
+                DGridRISIClients.ItemsSource = clients;
             }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditClientsPage(null));
+            NavigationService?.Navigate(new AddEditClientsPage(null));
+        }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = DGridRISIClients.SelectedItem as Client;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите клиента для редактирования.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            NavigationService?.Navigate(new AddEditClientsPage(selected));
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = DGridRISIClients.SelectedItem as Client;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите клиента для удаления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Удалить клиента \"{selected.Name}\"?", "Подтверждение",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                using (var context = new RISI_ServiceDeskEntities1())
+                {
+                    var client = context.Clients.Find(selected.Id);
+                    if (client != null)
+                    {
+                        context.Clients.Remove(client);
+                        context.SaveChanges();
+                    }
+                }
+                LoadData();
+                MessageBox.Show("Клиент удалён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void btnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadData();
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var context = RISI_ServiceDeskEntities1.GetContext();
-            foreach (var entry in context.ChangeTracker.Entries().ToList())
-            {
-                if (entry.State != EntityState.Added)
-                {
-                    entry.Reload();
-                }
-            }
-            DGridRISIClients.ItemsSource = context.Clients.ToList();
+            if (Visibility == Visibility.Visible)
+                LoadData();
         }
     }
 }

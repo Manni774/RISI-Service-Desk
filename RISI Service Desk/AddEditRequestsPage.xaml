@@ -64,13 +64,6 @@
         <DatePicker x:Name="dtpDeadLine" SelectedDate="{Binding DeadLine}" 
             Grid.Row="4" Grid.Column="2" Margin="0,5,0,5" Width="auto" HorizontalAlignment="Center"/>
 
-        <TextBlock Grid.Row="0" x:Name="TitleText" 
-            FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,30" Grid.RowSpan="2">
-            <StackPanel x:Name="FieldsPanel"/>
-        </ScrollViewer>
-
         <StackPanel Grid.Row="7" Grid.Column="2" Orientation="Horizontal" 
             HorizontalAlignment="Left" Margin="5,0,0,0" Width="237">
             <Button Content="Сохранить" Click="BtnSave_Click" Width="114" Height="40"/>

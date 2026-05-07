@@ -1,82 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для ServicePage.xaml
-    /// </summary>
     public partial class ServicePage : Page
     {
-
         public ServicePage()
         {
             InitializeComponent();
-            DGridRISIService.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            LoadData();
         }
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        private void LoadData()
         {
-            Manager.MainFrame.Navigate(new AddEditServicePage((sender as Button).DataContext as Service));
-        }
-
-        private void BtnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            var serviceRemove = DGridRISIService.SelectedItems.Cast<Service>().ToList();
-
-            if (serviceRemove.Any())
+            using (var context = new RISI_ServiceDeskEntities1())
             {
-                if (MessageBox.Show($"Вы точно хотите удалить следующие {serviceRemove.Count()} элементов?", "Внимание",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        var context = RISI_ServiceDeskEntities1.GetContext();
-                        foreach (var item in serviceRemove)
-                        {
-                            context.Services.Remove(item);
-                        }
-                        context.SaveChanges();
-                        MessageBox.Show("Данные удалены.");
-                        DGridRISIService.ItemsSource = new RISI_ServiceDeskEntities1().Services.ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
+                var services = context.Services.ToList();
+                DGridRISIService.ItemsSource = services;
             }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditServicePage(null));
+            NavigationService?.Navigate(new AddEditServicePage(null));
+        }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = (sender as Button)?.DataContext as Service;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите услугу для редактирования.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            NavigationService?.Navigate(new AddEditServicePage(selected));
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = DGridRISIService.SelectedItem as Service;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите услугу для удаления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Удалить услугу \"{selected.ServiceName}\"?", "Подтверждение",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                using (var context = new RISI_ServiceDeskEntities1())
+                {
+                    var service = context.Services.Find(selected.Id);
+                    if (service != null)
+                    {
+                        context.Services.Remove(service);
+                        context.SaveChanges();
+                    }
+                }
+                LoadData();
+                MessageBox.Show("Услуга удалена.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadData();
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var context = RISI_ServiceDeskEntities1.GetContext();
-            foreach (var entry in context.ChangeTracker.Entries().ToList())
-            {
-                if (entry.State != EntityState.Added)
-                {
-                    entry.Reload();
-                }
-            }
-            DGridRISIService.ItemsSource = context.Services.ToList();
+            if (Visibility == Visibility.Visible)
+                LoadData();
         }
     }
 }

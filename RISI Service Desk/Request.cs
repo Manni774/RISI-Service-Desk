@@ -17,7 +17,7 @@ namespace RISI_Service_Desk
         public int Id { get; set; }
         public int ClientId { get; set; }
         public int ServiceId { get; set; }
-        public Nullable<int> EmployeeId { get; set; }
+        public int EmployeeId { get; set; }
         public Nullable<System.DateTime> RequestDate { get; set; }
         public string Description { get; set; }
         public string Status { get; set; }

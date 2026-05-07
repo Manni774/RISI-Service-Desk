@@ -35,13 +35,6 @@
         <TextBox x:Name="txtEmail" Text="{Binding Email}" MaxLength="500" 
             Grid.Row="4" Grid.Column="1" Margin="33,3,34,5"/>
 
-        <TextBlock Grid.Row="0" x:Name="TitleText" 
-            FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
-
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,2,0,2" Grid.Row="1">
-            <StackPanel x:Name="FieldsPanel"/>
-        </ScrollViewer>
-
         <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" 
             HorizontalAlignment="Left" Margin="320,0,0,0" Width="237">
             <Button Content="Сохранить" Click="BtnSave_Click" Width="114" Height="50"/>

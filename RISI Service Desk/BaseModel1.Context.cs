@@ -15,8 +15,8 @@ namespace RISI_Service_Desk
     
     public partial class RISI_ServiceDeskEntities1 : DbContext
     {
-        private static RISI_ServiceDeskEntities1 _context;
-
+        private
+            static RISI_ServiceDeskEntities1 _context;
         public RISI_ServiceDeskEntities1()
             : base("name=RISI_ServiceDeskEntities1")
         {

@@ -1,81 +1,78 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для EmployeesPage.xaml
-    /// </summary>
     public partial class EmployeesPage : Page
     {
         public EmployeesPage()
         {
             InitializeComponent();
-            DGridRISIEmployees.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Employees.ToList();
+            LoadData();
         }
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        private void LoadData()
         {
-            Manager.MainFrame.Navigate(new AddEditEmployeesPage((sender as Button).DataContext as Employee));
-        }
-
-        private void BtnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            var employeeRemove = DGridRISIEmployees.SelectedItems.Cast<Employee>().ToList();
-
-            if (employeeRemove.Any())
+            using (var context = new RISI_ServiceDeskEntities1())
             {
-                if (MessageBox.Show($"Вы точно хотите удалить следующие {employeeRemove.Count()} элементов?", "Внимание",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        var context = RISI_ServiceDeskEntities1.GetContext();
-                        foreach (var item in employeeRemove)
-                        {
-                            context.Employees.Remove(item);
-                        }
-                        context.SaveChanges();
-                        MessageBox.Show("Данные удалены.");
-                        DGridRISIEmployees.ItemsSource = new RISI_ServiceDeskEntities1().Employees.ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
+                var employees = context.Employees.ToList();
+                DGridRISIEmployees.ItemsSource = employees;
             }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditEmployeesPage(null));
+            NavigationService?.Navigate(new AddEditEmployeesPage(null));
+        }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = (sender as Button)?.DataContext as Employee;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите сотрудника для редактирования.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            NavigationService?.Navigate(new AddEditEmployeesPage(selected));
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = DGridRISIEmployees.SelectedItem as Employee;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите сотрудника для удаления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Удалить сотрудника \"{selected.FullName}\"?", "Подтверждение",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                using (var context = new RISI_ServiceDeskEntities1())
+                {
+                    var employee = context.Employees.Find(selected.Id);
+                    if (employee != null)
+                    {
+                        context.Employees.Remove(employee);
+                        context.SaveChanges();
+                    }
+                }
+                LoadData();
+                MessageBox.Show("Сотрудник удалён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadData();
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var context = RISI_ServiceDeskEntities1.GetContext();
-            foreach (var entry in context.ChangeTracker.Entries().ToList())
-            {
-                if (entry.State != EntityState.Added)
-                {
-                    entry.Reload();
-                }
-            }
-            DGridRISIEmployees.ItemsSource = context.Employees.ToList();
+            if (Visibility == Visibility.Visible)
+                LoadData();
         }
     }
 }

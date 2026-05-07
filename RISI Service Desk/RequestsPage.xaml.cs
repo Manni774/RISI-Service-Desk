@@ -1,81 +1,83 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для RequestsPage.xaml
-    /// </summary>
     public partial class RequestsPage : Page
     {
         public RequestsPage()
         {
             InitializeComponent();
-            DGridRISIRequests.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Requests.ToList();
+            LoadData();
         }
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        private void LoadData()
         {
-            Manager.MainFrame.Navigate(new AddEditRequestsPage((sender as Button).DataContext as Request));
-        }
-
-        private void BtnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            var requestRemove = DGridRISIRequests.SelectedItems.Cast<Request>().ToList();
-
-            if (requestRemove.Any())
+            using (var context = new RISI_ServiceDeskEntities1())
             {
-                if (MessageBox.Show($"Вы точно хотите удалить следующие {requestRemove.Count()} элементов?", "Внимание",
-                    MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        var context = RISI_ServiceDeskEntities1.GetContext();
-                        foreach (var item in requestRemove)
-                        {
-                            context.Requests.Remove(item);
-                        }
-                        context.SaveChanges();
-                        MessageBox.Show("Данные удалены.");
-                        DGridRISIRequests.ItemsSource = new RISI_ServiceDeskEntities1().Requests.ToList();
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.Message);
-                    }
-                }
+                // Для отображения названий клиента, услуги и сотрудника используем Include
+                var requests = context.Requests
+                    .Include("Client")
+                    .Include("Service")
+                    .Include("Employee")
+                    .ToList();
+                DGridRISIRequests.ItemsSource = requests;
             }
         }
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditRequestsPage(null));
+            NavigationService?.Navigate(new AddEditRequestsPage(null));
+        }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = (sender as Button)?.DataContext as Request;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите заявку для редактирования.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            NavigationService?.Navigate(new AddEditRequestsPage(selected));
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = DGridRISIRequests.SelectedItem as Request;
+            if (selected == null)
+            {
+                MessageBox.Show("Выберите заявку для удаления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Удалить заявку №{selected.Id}?", "Подтверждение",
+                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                using (var context = new RISI_ServiceDeskEntities1())
+                {
+                    var request = context.Requests.Find(selected.Id);
+                    if (request != null)
+                    {
+                        context.Requests.Remove(request);
+                        context.SaveChanges();
+                    }
+                }
+                LoadData();
+                MessageBox.Show("Заявка удалена.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void BtnRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            LoadData();
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            var context = RISI_ServiceDeskEntities1.GetContext();
-            foreach (var entry in context.ChangeTracker.Entries().ToList())
-            {
-                if (entry.State != EntityState.Added)
-                {
-                    entry.Reload();
-                }
-            }
-            DGridRISIRequests.ItemsSource = context.Requests.ToList();
+            if (Visibility == Visibility.Visible)
+                LoadData();
         }
     }
 }

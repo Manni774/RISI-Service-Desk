@@ -1,80 +1,82 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для AddEditRequestsPage.xaml
-    /// </summary>
     public partial class AddEditRequestsPage : Page
     {
-        private Request _currentRequests = new Request();
+        private Request _currentRequest;
         private bool _isEditMode;
 
-        public AddEditRequestsPage(Request selectedRequests)
+        public AddEditRequestsPage(Request selectedRequest)
         {
             InitializeComponent();
-            if (selectedRequests != null)
-                _currentRequests = selectedRequests;
-            DataContext = _currentRequests;
-            CmbClient.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Clients.ToList();
-            CmbService.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
-            CmbEmployee.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Employees.ToList();
-            if (!_isEditMode) Title = "Добавление услуги";
-            else Title = "Редактирование услуги";
+
+            _isEditMode = (selectedRequest != null);
+            _currentRequest = selectedRequest ?? new Request();
+
+            DataContext = _currentRequest;
+
+            // Загружаем списки для ComboBox через локальный контекст
+            using (var context = new RISI_ServiceDeskEntities1())
+            {
+                CmbClient.ItemsSource = context.Clients.ToList();
+                CmbService.ItemsSource = context.Services.ToList();
+                CmbEmployee.ItemsSource = context.Employees.ToList();
+            }
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             StringBuilder errors = new StringBuilder();
 
-            if (_currentRequests.ClientId == 0)
-                errors.AppendLine("Укажите земельный участок.");
-            if (_currentRequests.ServiceId == 0)
-                errors.AppendLine("Укажите земельный участок.");
-            if (_currentRequests.EmployeeId == 0)
-                errors.AppendLine("Укажите земельный участок.");
+            // Валидация
+            if (_currentRequest.ClientId == 0 || _currentRequest.ClientId == null)
+                errors.AppendLine("Выберите клиента.");
+            if (_currentRequest.ServiceId == 0 || _currentRequest.ServiceId == null)
+                errors.AppendLine("Выберите услугу.");
+            // Сотрудник может быть не назначен, поэтому проверяем только если обязательно
+            // if (_currentRequest.EmployeeId == 0 || _currentRequest.EmployeeId == null)
+            //     errors.AppendLine("Назначьте сотрудника.");
 
-            _currentRequests.Priority = txtPriority.Text;
-            _currentRequests.Description = txtDescription.Text;
-            _currentRequests.Status = txtStatus.Text;
+            if (string.IsNullOrWhiteSpace(txtPriority.Text))
+                errors.AppendLine("Укажите приоритет.");
+            if (string.IsNullOrWhiteSpace(txtStatus.Text))
+                errors.AppendLine("Укажите статус.");
 
             if (errors.Length > 0)
             {
-                MessageBox.Show(errors.ToString());
+                MessageBox.Show(errors.ToString(), "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            // Обновляем остальные поля (кроме внешних ключей, которые уже привязаны)
+            _currentRequest.Priority = txtPriority.Text.Trim();
+            _currentRequest.Description = txtDescription.Text;
+            _currentRequest.Status = txtStatus.Text.Trim();
 
             using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Requests.Add(_currentRequests);
+                        context.Requests.Add(_currentRequest);
                     else
                     {
-                        context.Requests.Attach(_currentRequests);
-                        context.Entry(_currentRequests).State = EntityState.Modified;
+                        context.Requests.Attach(_currentRequest);
+                        context.Entry(_currentRequest).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     // Возврат на предыдущую страницу
-                    if (Manager.MainFrame.CanGoBack)
-                        Manager.MainFrame.GoBack();
+                    if (NavigationService != null && NavigationService.CanGoBack)
+                        NavigationService.GoBack();
                 }
                 catch (Exception ex)
                 {
@@ -86,8 +88,8 @@ namespace RISI_Service_Desk
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Manager.MainFrame.CanGoBack)
-                Manager.MainFrame.GoBack();
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
     }
 }

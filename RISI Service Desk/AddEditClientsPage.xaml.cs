@@ -1,89 +1,81 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.Entity;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RISI_Service_Desk
 {
-    /// <summary>
-    /// Логика взаимодействия для AddEditClientsPage.xaml
-    /// </summary>
     public partial class AddEditClientsPage : Page
     {
-        private Client _currentClients = new Client();
+        private Client _currentClient;
         private bool _isEditMode;
 
-        public AddEditClientsPage(Client selectedClients)
+        public AddEditClientsPage(Client selectedClient)
         {
             InitializeComponent();
-            if (selectedClients != null)
-                _currentClients = selectedClients;
-            DataContext = _currentClients;
-            if (!_isEditMode) Title = "Добавление услуги";
-            else Title = "Редактирование услуги";
+
+            _isEditMode = (selectedClient != null);
+            _currentClient = selectedClient ?? new Client();
+
+            DataContext = _currentClient;
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-
             // Валидация
             if (string.IsNullOrWhiteSpace(txtName.Text))
             {
                 MessageBox.Show("Введите наименование компании клиента.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtName.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtContact.Text))
             {
                 MessageBox.Show("Введите контактное лицо.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtContact.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtPhone.Text))
             {
                 MessageBox.Show("Введите номер телефона.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtPhone.Focus();
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(txtEmail.Text))
             {
                 MessageBox.Show("Введите эл. почту.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtEmail.Focus();
                 return;
             }
 
-            _currentClients.Name = txtName.Text.Trim();
-            _currentClients.ContactPerson = txtContact.Text;
-            _currentClients.Phone = txtPhone.Text;
-            _currentClients.Email = txtEmail.Text;
+            // Обновляем объект
+            _currentClient.Name = txtName.Text.Trim();
+            _currentClient.ContactPerson = txtContact.Text.Trim();
+            _currentClient.Phone = txtPhone.Text.Trim();
+            _currentClient.Email = txtEmail.Text.Trim();
 
+            // Сохраняем в новом контексте
             using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Clients.Add(_currentClients);
+                        context.Clients.Add(_currentClient);
                     else
                     {
-                        context.Clients.Attach(_currentClients);
-                        context.Entry(_currentClients).State = EntityState.Modified;
+                        context.Clients.Attach(_currentClient);
+                        context.Entry(_currentClient).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
 
                     // Возврат на предыдущую страницу
-                    if (Manager.MainFrame.CanGoBack)
-                        Manager.MainFrame.GoBack();
+                    if (NavigationService != null && NavigationService.CanGoBack)
+                        NavigationService.GoBack();
                 }
                 catch (Exception ex)
                 {
@@ -95,8 +87,8 @@ namespace RISI_Service_Desk
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (Manager.MainFrame.CanGoBack)
-                Manager.MainFrame.GoBack();
+            if (NavigationService != null && NavigationService.CanGoBack)
+                NavigationService.GoBack();
         }
     }
 }
