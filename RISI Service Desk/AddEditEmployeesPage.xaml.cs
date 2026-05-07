@@ -13,24 +13,24 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace RISI_Service_Desk
 {
     /// <summary>
-    /// Логика взаимодействия для AddEditServicePage.xaml
+    /// Логика взаимодействия для AddEditEmployeesPage.xaml
     /// </summary>
-    public partial class AddEditServicePage : Page
+    public partial class AddEditEmployeesPage : Page
     {
-        private Service _currentServices = new Service();
+        private Employee _currentEmployees = new Employee();
         private bool _isEditMode;
 
-        public AddEditServicePage(Service selectedServices)
+        public AddEditEmployeesPage(Employee selectedEmployees)
         {
             InitializeComponent();
-            if (selectedServices != null)
-                _currentServices = selectedServices;
-            DataContext = _currentServices;
-            CmbNameServise.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            if (selectedEmployees != null)
+                _currentEmployees = selectedEmployees;
+            DataContext = _currentEmployees;
             if (!_isEditMode) Title = "Добавление услуги";
             else Title = "Редактирование услуги";
         }
@@ -39,35 +39,45 @@ namespace RISI_Service_Desk
         {
 
             // Валидация
-            if (string.IsNullOrWhiteSpace(CmbNameServise.Text))
+            if (string.IsNullOrWhiteSpace(txtFullName.Text))
             {
-                MessageBox.Show("Выберите наименование услуги.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                CmbNameServise.Focus();
+                MessageBox.Show("Введите наименование компании клиента.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            decimal price = 0;
-            if (!string.IsNullOrWhiteSpace(txtBasePrice.Text) && !decimal.TryParse(txtBasePrice.Text, out price))
+            if (string.IsNullOrWhiteSpace(txtPosition.Text))
             {
-                MessageBox.Show("Цена должна быть числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                txtBasePrice.Focus();
+                MessageBox.Show("Введите контактное лицо.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _currentServices.ServiceName = CmbNameServise.Text.Trim();
-            _currentServices.Description = txtDescription.Text;
-            _currentServices.BasePrice = price;
+            if (string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                MessageBox.Show("Введите номер телефона.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            using (var context = new RISI_ServiceDeskEntities1()) 
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                MessageBox.Show("Введите эл. почту.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _currentEmployees.FullName = txtFullName.Text.Trim();
+            _currentEmployees.Position = txtPosition.Text;
+            _currentEmployees.Phone = txtPhone.Text;
+            _currentEmployees.Email = txtEmail.Text;
+
+            using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Services.Add(_currentServices);
+                        context.Employees.Add(_currentEmployees);
                     else
                     {
-                        context.Services.Attach(_currentServices);
-                        context.Entry(_currentServices).State = EntityState.Modified;
+                        context.Employees.Attach(_currentEmployees);
+                        context.Entry(_currentEmployees).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);

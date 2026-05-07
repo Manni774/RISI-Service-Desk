@@ -27,23 +27,6 @@ namespace RISI_Service_Desk
             Manager.MainFrame = MainFrame;
         }
 
-        private void btnBack_Click(object sender, RoutedEventArgs e)
-        {
-            Manager.MainFrame.GoBack();
-        }
-
-        private void MainFrame_ContentRendered(object sender, EventArgs e)
-        {
-            if (MainFrame.CanGoBack)
-            {
-                btnBack.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                btnBack.Visibility =Visibility.Hidden;
-            }
-        }
-
         private void BtnServices_Click(object sender, RoutedEventArgs e)
         {
             MainFrame.Navigate(new ServicePage());
@@ -51,17 +34,17 @@ namespace RISI_Service_Desk
 
         private void BtnClients_Click(object sender, RoutedEventArgs e)
         {
-            //MainFrame.Navigate(new ClientsPage());
+            MainFrame.Navigate(new ClientsPage());
         }
 
         private void BtnEmployees_Click(object sender, RoutedEventArgs e)
         {
-            //MainFrame.Navigate(new EmployeesPage());
+            MainFrame.Navigate(new EmployeesPage());
         }
 
         private void BtnRequests_Click(object sender, RoutedEventArgs e)
         {
-            //MainFrame.Navigate(new RequestsPage());
+            MainFrame.Navigate(new RequestsPage());
         }
     }
 }

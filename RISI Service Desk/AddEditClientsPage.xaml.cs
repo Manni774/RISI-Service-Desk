@@ -17,20 +17,19 @@ using System.Windows.Shapes;
 namespace RISI_Service_Desk
 {
     /// <summary>
-    /// Логика взаимодействия для AddEditServicePage.xaml
+    /// Логика взаимодействия для AddEditClientsPage.xaml
     /// </summary>
-    public partial class AddEditServicePage : Page
+    public partial class AddEditClientsPage : Page
     {
-        private Service _currentServices = new Service();
+        private Client _currentClients = new Client();
         private bool _isEditMode;
 
-        public AddEditServicePage(Service selectedServices)
+        public AddEditClientsPage(Client selectedClients)
         {
             InitializeComponent();
-            if (selectedServices != null)
-                _currentServices = selectedServices;
-            DataContext = _currentServices;
-            CmbNameServise.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            if (selectedClients != null)
+                _currentClients = selectedClients;
+            DataContext = _currentClients;
             if (!_isEditMode) Title = "Добавление услуги";
             else Title = "Редактирование услуги";
         }
@@ -39,35 +38,45 @@ namespace RISI_Service_Desk
         {
 
             // Валидация
-            if (string.IsNullOrWhiteSpace(CmbNameServise.Text))
+            if (string.IsNullOrWhiteSpace(txtName.Text))
             {
-                MessageBox.Show("Выберите наименование услуги.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                CmbNameServise.Focus();
+                MessageBox.Show("Введите наименование компании клиента.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            decimal price = 0;
-            if (!string.IsNullOrWhiteSpace(txtBasePrice.Text) && !decimal.TryParse(txtBasePrice.Text, out price))
+            if (string.IsNullOrWhiteSpace(txtContact.Text))
             {
-                MessageBox.Show("Цена должна быть числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                txtBasePrice.Focus();
+                MessageBox.Show("Введите контактное лицо.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            _currentServices.ServiceName = CmbNameServise.Text.Trim();
-            _currentServices.Description = txtDescription.Text;
-            _currentServices.BasePrice = price;
+            if (string.IsNullOrWhiteSpace(txtPhone.Text))
+            {
+                MessageBox.Show("Введите номер телефона.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            using (var context = new RISI_ServiceDeskEntities1()) 
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                MessageBox.Show("Введите эл. почту.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            _currentClients.Name = txtName.Text.Trim();
+            _currentClients.ContactPerson = txtContact.Text;
+            _currentClients.Phone = txtPhone.Text;
+            _currentClients.Email = txtEmail.Text;
+
+            using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Services.Add(_currentServices);
+                        context.Clients.Add(_currentClients);
                     else
                     {
-                        context.Services.Attach(_currentServices);
-                        context.Entry(_currentServices).State = EntityState.Modified;
+                        context.Clients.Attach(_currentClients);
+                        context.Entry(_currentClients).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);

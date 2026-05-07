@@ -17,41 +17,40 @@ using System.Windows.Shapes;
 namespace RISI_Service_Desk
 {
     /// <summary>
-    /// Логика взаимодействия для ServicePage.xaml
+    /// Логика взаимодействия для EmployeesPage.xaml
     /// </summary>
-    public partial class ServicePage : Page
+    public partial class EmployeesPage : Page
     {
-
-        public ServicePage()
+        public EmployeesPage()
         {
             InitializeComponent();
-            DGridRISIService.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            DGridRISIEmployees.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Employees.ToList();
         }
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditServicePage((sender as Button).DataContext as Service));
+            Manager.MainFrame.Navigate(new AddEditEmployeesPage((sender as Button).DataContext as Employee));
         }
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var serviceRemove = DGridRISIService.SelectedItems.Cast<Service>().ToList();
+            var employeeRemove = DGridRISIEmployees.SelectedItems.Cast<Employee>().ToList();
 
-            if (serviceRemove.Any())
+            if (employeeRemove.Any())
             {
-                if (MessageBox.Show($"Вы точно хотите удалить следующие {serviceRemove.Count()} элементов?", "Внимание",
+                if (MessageBox.Show($"Вы точно хотите удалить следующие {employeeRemove.Count()} элементов?", "Внимание",
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     try
                     {
                         var context = RISI_ServiceDeskEntities1.GetContext();
-                        foreach (var item in serviceRemove)
+                        foreach (var item in employeeRemove)
                         {
-                            context.Services.Remove(item);
+                            context.Employees.Remove(item);
                         }
                         context.SaveChanges();
                         MessageBox.Show("Данные удалены.");
-                        DGridRISIService.ItemsSource = new RISI_ServiceDeskEntities1().Services.ToList();
+                        DGridRISIEmployees.ItemsSource = new RISI_ServiceDeskEntities1().Employees.ToList();
                     }
                     catch (Exception ex)
                     {
@@ -63,7 +62,7 @@ namespace RISI_Service_Desk
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditServicePage(null));
+            Manager.MainFrame.Navigate(new AddEditEmployeesPage(null));
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -76,7 +75,7 @@ namespace RISI_Service_Desk
                     entry.Reload();
                 }
             }
-            DGridRISIService.ItemsSource = context.Services.ToList();
+            DGridRISIEmployees.ItemsSource = context.Employees.ToList();
         }
     }
 }

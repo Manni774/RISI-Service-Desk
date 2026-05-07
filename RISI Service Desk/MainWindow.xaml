@@ -5,16 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RISI_Service_Desk"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="RISI Service Desk" Height="450" Width="800">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Frame NavigationUIVisibility="Hidden" ContentRendered="MainFrame_ContentRendered" Grid.Row="1" Name ="MainFrame"/>
-        <Button Content="Обратно" Name="btnBack" Width="110" Height="40" Click="btnBack_Click" Margin="10,15,640,54"/>
-        
+        <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Name ="MainFrame"/>
         <!-- Панель навигации по таблицам -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" 
                     Margin="10" HorizontalAlignment="Center">

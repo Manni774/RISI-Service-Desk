@@ -62,6 +62,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddEditClientsPage.xaml.cs">
+      <DependentUpon>AddEditClientsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddEditEmployeesPage.xaml.cs">
+      <DependentUpon>AddEditEmployeesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AddEditRequestsPage.xaml.cs">
+      <DependentUpon>AddEditRequestsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AddEditServicePage.xaml.cs">
       <DependentUpon>AddEditServicePage.xaml</DependentUpon>
     </Compile>
@@ -83,12 +92,21 @@
     <Compile Include="Client.cs">
       <DependentUpon>BaseModel1.tt</DependentUpon>
     </Compile>
+    <Compile Include="ClientsPage.xaml.cs">
+      <DependentUpon>ClientsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Employee.cs">
       <DependentUpon>BaseModel1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmployeesPage.xaml.cs">
+      <DependentUpon>EmployeesPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Manager.cs" />
     <Compile Include="Request.cs">
       <DependentUpon>BaseModel1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RequestsPage.xaml.cs">
+      <DependentUpon>RequestsPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Service.cs">
       <DependentUpon>BaseModel1.tt</DependentUpon>
@@ -99,7 +117,27 @@
     <Compile Include="sysdiagram.cs">
       <DependentUpon>BaseModel1.tt</DependentUpon>
     </Compile>
+    <Page Include="AddEditClientsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddEditEmployeesPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AddEditRequestsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AddEditServicePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ClientsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="EmployeesPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -115,6 +153,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RequestsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ServicePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

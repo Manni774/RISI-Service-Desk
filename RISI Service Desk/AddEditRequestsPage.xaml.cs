@@ -17,57 +17,57 @@ using System.Windows.Shapes;
 namespace RISI_Service_Desk
 {
     /// <summary>
-    /// Логика взаимодействия для AddEditServicePage.xaml
+    /// Логика взаимодействия для AddEditRequestsPage.xaml
     /// </summary>
-    public partial class AddEditServicePage : Page
+    public partial class AddEditRequestsPage : Page
     {
-        private Service _currentServices = new Service();
+        private Request _currentRequests = new Request();
         private bool _isEditMode;
 
-        public AddEditServicePage(Service selectedServices)
+        public AddEditRequestsPage(Request selectedRequests)
         {
             InitializeComponent();
-            if (selectedServices != null)
-                _currentServices = selectedServices;
-            DataContext = _currentServices;
-            CmbNameServise.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            if (selectedRequests != null)
+                _currentRequests = selectedRequests;
+            DataContext = _currentRequests;
+            CmbClient.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Clients.ToList();
+            CmbService.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            CmbEmployee.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Employees.ToList();
             if (!_isEditMode) Title = "Добавление услуги";
             else Title = "Редактирование услуги";
         }
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
+            StringBuilder errors = new StringBuilder();
 
-            // Валидация
-            if (string.IsNullOrWhiteSpace(CmbNameServise.Text))
+            if (_currentRequests.ClientId == 0)
+                errors.AppendLine("Укажите земельный участок.");
+            if (_currentRequests.ServiceId == 0)
+                errors.AppendLine("Укажите земельный участок.");
+            if (_currentRequests.EmployeeId == 0)
+                errors.AppendLine("Укажите земельный участок.");
+
+            _currentRequests.Priority = txtPriority.Text;
+            _currentRequests.Description = txtDescription.Text;
+            _currentRequests.Status = txtStatus.Text;
+
+            if (errors.Length > 0)
             {
-                MessageBox.Show("Выберите наименование услуги.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                CmbNameServise.Focus();
+                MessageBox.Show(errors.ToString());
                 return;
             }
 
-            decimal price = 0;
-            if (!string.IsNullOrWhiteSpace(txtBasePrice.Text) && !decimal.TryParse(txtBasePrice.Text, out price))
-            {
-                MessageBox.Show("Цена должна быть числом.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                txtBasePrice.Focus();
-                return;
-            }
-
-            _currentServices.ServiceName = CmbNameServise.Text.Trim();
-            _currentServices.Description = txtDescription.Text;
-            _currentServices.BasePrice = price;
-
-            using (var context = new RISI_ServiceDeskEntities1()) 
+            using (var context = new RISI_ServiceDeskEntities1())
             {
                 try
                 {
                     if (!_isEditMode)
-                        context.Services.Add(_currentServices);
+                        context.Requests.Add(_currentRequests);
                     else
                     {
-                        context.Services.Attach(_currentServices);
-                        context.Entry(_currentServices).State = EntityState.Modified;
+                        context.Requests.Attach(_currentRequests);
+                        context.Entry(_currentRequests).State = EntityState.Modified;
                     }
                     context.SaveChanges();
                     MessageBox.Show("Сохранено успешно.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);

@@ -17,41 +17,40 @@ using System.Windows.Shapes;
 namespace RISI_Service_Desk
 {
     /// <summary>
-    /// Логика взаимодействия для ServicePage.xaml
+    /// Логика взаимодействия для ClientsPage.xaml
     /// </summary>
-    public partial class ServicePage : Page
+    public partial class ClientsPage : Page
     {
-
-        public ServicePage()
+        public ClientsPage()
         {
             InitializeComponent();
-            DGridRISIService.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Services.ToList();
+            DGridRISIClients.ItemsSource = RISI_ServiceDeskEntities1.GetContext().Clients.ToList();
         }
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditServicePage((sender as Button).DataContext as Service));
+            Manager.MainFrame.Navigate(new AddEditClientsPage((sender as Button).DataContext as Client));
         }
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
-            var serviceRemove = DGridRISIService.SelectedItems.Cast<Service>().ToList();
+            var clientRemove = DGridRISIClients.SelectedItems.Cast<Client>().ToList();
 
-            if (serviceRemove.Any())
+            if (clientRemove.Any())
             {
-                if (MessageBox.Show($"Вы точно хотите удалить следующие {serviceRemove.Count()} элементов?", "Внимание",
+                if (MessageBox.Show($"Вы точно хотите удалить следующие {clientRemove.Count()} элементов?", "Внимание",
                     MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                 {
                     try
                     {
                         var context = RISI_ServiceDeskEntities1.GetContext();
-                        foreach (var item in serviceRemove)
+                        foreach (var item in clientRemove)
                         {
-                            context.Services.Remove(item);
+                            context.Clients.Remove(item);
                         }
                         context.SaveChanges();
                         MessageBox.Show("Данные удалены.");
-                        DGridRISIService.ItemsSource = new RISI_ServiceDeskEntities1().Services.ToList();
+                        DGridRISIClients.ItemsSource = new RISI_ServiceDeskEntities1().Clients.ToList();
                     }
                     catch (Exception ex)
                     {
@@ -63,7 +62,7 @@ namespace RISI_Service_Desk
 
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
-            Manager.MainFrame.Navigate(new AddEditServicePage(null));
+            Manager.MainFrame.Navigate(new AddEditClientsPage(null));
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -76,7 +75,7 @@ namespace RISI_Service_Desk
                     entry.Reload();
                 }
             }
-            DGridRISIService.ItemsSource = context.Services.ToList();
+            DGridRISIClients.ItemsSource = context.Clients.ToList();
         }
     }
 }
