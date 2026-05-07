@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:RISI_Service_Desk"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="ServicePage">
+      Title="ServicePage" IsVisibleChanged="Page_IsVisibleChanged">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="353*"/>

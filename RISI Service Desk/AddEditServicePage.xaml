@@ -10,21 +10,21 @@
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="52*"/>
-            <RowDefinition Height="52*"/>
-            <RowDefinition Height="56*"/>
-            <RowDefinition Height="57*"/>
-            <RowDefinition Height="64*"/>
-            <RowDefinition Height="64*"/>
-            <RowDefinition Height="89*"/>
+            <RowDefinition Height="54*"/>
+            <RowDefinition Height="37*"/>
+            <RowDefinition Height="71*"/>
+            <RowDefinition Height="66*"/>
+            <RowDefinition Height="66*"/>
+            <RowDefinition Height="63*"/>
+            <RowDefinition Height="92*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="233*"/>
             <ColumnDefinition Width="567*"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="2" Text="Название услуги" Height="22" Margin="10,18,64,18" Width="159" />
-        <TextBlock Grid.Row="3" Text="Описание услуги" Height="20" Margin="10,19,138,20" Width="85"></TextBlock>
-        <TextBlock Grid.Row="4" Text="Прайс" Height="22" Margin="10,22,127,22" Width="96"></TextBlock>
+        <TextBlock Grid.Row="2" Text="Название услуги:" Margin="10,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="51"/>
+        <TextBlock Grid.Row="3" Text="Описание услуги:" Margin="10,0,16,0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="48"/>
+        <TextBlock Grid.Row="4" Text="Прайс:" Margin="10,0,16,0" VerticalAlignment="Center" HorizontalAlignment="Center" Height="46"/>
         <ComboBox x:Name="CmbNameServise" 
             Grid.Row="2" Grid.Column="1" 
             Margin="33,5,34,5"
@@ -32,23 +32,23 @@
             SelectedValuePath="ServiceName"
             SelectedValue="{Binding ServiceName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
         </ComboBox>
-        <TextBox Text="{Binding Description}" MaxLength="500" 
+        <TextBox x:Name="txtDescription" Text="{Binding Description}" MaxLength="500" 
             Grid.Row="3" Grid.Column="1" Margin="33,3,34,5"/>
-        <TextBox Text="{Binding BasePrice}" MaxLength="500" 
+        <TextBox x:Name="txtBasePrice" Text="{Binding BasePrice}" MaxLength="500" 
             Grid.Row="4" Grid.Column="1" Margin="33,3,34,5"/>
-        
+
         <TextBlock Grid.Row="0" x:Name="TitleText" 
                    FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,54,0,0" Grid.RowSpan="2">
             <StackPanel x:Name="FieldsPanel"/>
         </ScrollViewer>
 
-        <StackPanel Grid.Row="7" Grid.Column="1" Orientation="Horizontal" 
-                    HorizontalAlignment="Left" Margin="357,0,0,0" Width="200">
-            <Button Content="Сохранить" Click="BtnSave_Click" Width="90" Height="50"/>
-            <Button Content="Отмена" IsCancel="True" Width="90" Height="50"
-                    Background="LightGray" Foreground="Black"/>
+        <StackPanel Grid.Row="6" Grid.Column="1" Orientation="Horizontal" 
+                    HorizontalAlignment="Left" Margin="320,0,0,0" Width="237">
+            <Button Content="Сохранить" Click="BtnSave_Click" Width="114" Height="50"/>
+            <Button Content="Отмена" IsCancel="True" Width="100" Height="50"
+                    Background="LightGray" Foreground="Black" Click="Button_Click"/>
         </StackPanel>
     </Grid>
 </Page>

@@ -43,5 +43,25 @@ namespace RISI_Service_Desk
                 btnBack.Visibility =Visibility.Hidden;
             }
         }
+
+        private void BtnServices_Click(object sender, RoutedEventArgs e)
+        {
+            MainFrame.Navigate(new ServicePage());
+        }
+
+        private void BtnClients_Click(object sender, RoutedEventArgs e)
+        {
+            //MainFrame.Navigate(new ClientsPage());
+        }
+
+        private void BtnEmployees_Click(object sender, RoutedEventArgs e)
+        {
+            //MainFrame.Navigate(new EmployeesPage());
+        }
+
+        private void BtnRequests_Click(object sender, RoutedEventArgs e)
+        {
+            //MainFrame.Navigate(new RequestsPage());
+        }
     }
 }

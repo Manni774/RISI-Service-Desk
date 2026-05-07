@@ -23,14 +23,5 @@
             <Button Content="Сотрудники" Click="BtnEmployees_Click" Width="100"/>
             <Button Content="Заявки" Click="BtnRequests_Click" Width="100"/>
         </StackPanel>
-
-        <!-- Нижняя панель с кнопками действий и статусом -->
-        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="10">
-            <WrapPanel HorizontalAlignment="Center" Margin="0,5">
-                <Button Content="Добавить" Click="BtnAdd_Click" Width="100"/>
-                <Button Content="Редактировать" Click="BtnEdit_Click" Width="100"/>
-                <Button Content="Удалить" Click="BtnDelete_Click" Width="100"/>
-            </WrapPanel>
-        </StackPanel>
     </Grid>
 </Window>

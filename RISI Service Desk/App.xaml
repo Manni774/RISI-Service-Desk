@@ -47,6 +47,24 @@
             <Setter Property="HeadersVisibility" Value="Column"/>
         </Style>
 
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Margin" Value="7"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Regular"/>
+            <Setter Property="Margin" Value="7"/>
+        </Style>
+
+        <Style TargetType="TextBlock" x:Key="HeaderTextStyle">
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10"/>
+            <Setter Property="Foreground" Value="#FF333333"/>
+        </Style>
+
         <!-- Стиль окна -->
         <Style TargetType="Window">
             <Setter Property="FontFamily" Value="Segoe UI"/>
